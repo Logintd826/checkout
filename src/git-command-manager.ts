@@ -125,14 +125,14 @@ class GitCommandManager {
       }
     }
 
-    core.info(`Running git ${args}`)
+    core.info(`Running git ${args.join(' ')}`)
 
     await this.execGit(args, false, true, listeners)
 
-    core.info(`stderr callback is: ${stderr}`)
-    core.info(`errline callback is: ${errline}`)
-    core.info(`stdout callback is: ${stdout}`)
-    core.info(`stdline callback is: ${stdline}`)
+    core.debug(`stderr callback is: ${stderr}`)
+    core.debug(`errline callback is: ${errline}`)
+    core.debug(`stdout callback is: ${stdout}`)
+    core.debug(`stdline callback is: ${stdline}`)
 
     for (let branch of stdline) {
       branch = branch.trim()
