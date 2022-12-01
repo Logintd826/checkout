@@ -7417,6 +7417,7 @@ class GitCommandManager {
                     stdline.push(data.toString());
                 }
             };
+            core.info(`Running git ${args}`);
             yield this.execGit(args, false, true, listeners);
             core.info(`stderr callback is: ${stderr}`);
             core.info(`errline callback is: ${errline}`);
@@ -7434,6 +7435,7 @@ class GitCommandManager {
                     result.push(branch);
                 }
             }
+            core.info(result.join('\n'));
             return result;
         });
     }

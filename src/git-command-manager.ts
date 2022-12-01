@@ -125,6 +125,8 @@ class GitCommandManager {
       }
     }
 
+    core.info(`Running git ${args}`)
+
     await this.execGit(args, false, true, listeners)
 
     core.info(`stderr callback is: ${stderr}`)
@@ -144,6 +146,8 @@ class GitCommandManager {
         result.push(branch)
       }
     }
+
+    core.info(result.join('\n'))
     
     return result
   }
