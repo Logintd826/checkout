@@ -7412,14 +7412,9 @@ class GitCommandManager {
                     if (data.toString().trimRight().endsWith('is ambiguous')) {
                         stderr.push(data.toString());
                     }
-                    else {
-                        santizedOutput.push(data.toString());
-                    }
                 }
             };
             const output = yield this.execGit(args, false, false, listeners);
-            output.stdout.concat(santizedOutput.join('\n'));
-            core.info(santizedOutput.join('\n'));
             core.info(`the length of the custom callbacks is: ${stderr.length}`);
             for (let branch of output.stdout.trim().split('\n')) {
                 branch = branch.trim();
@@ -7706,6 +7701,8 @@ class GitCommandManager {
                 silent,
                 ignoreReturnCode: allowAllExitCodes,
                 listeners: mergedListeners,
+                outStream: undefined,
+                errStream: undefined
             };
             result.exitCode = yield exec.exec(`"${this.gitPath}"`, args, options);
             result.stdout = stdout.join('');

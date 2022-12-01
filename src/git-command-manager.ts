@@ -117,17 +117,12 @@ class GitCommandManager {
       stdline: (data: Buffer) => {
         if (data.toString().trimRight().endsWith('is ambiguous')) {
           stderr.push(data.toString())
-        } else {
-          santizedOutput.push(data.toString())
         }
       }
     }
 
     const output = await this.execGit(args, false, false, listeners)
 
-    output.stdout.concat(santizedOutput.join('\n'))
-
-    core.info(santizedOutput.join('\n'))
     core.info(`the length of the custom callbacks is: ${stderr.length}`)
 
     for (let branch of output.stdout.trim().split('\n')) {
@@ -449,6 +444,8 @@ class GitCommandManager {
       silent,
       ignoreReturnCode: allowAllExitCodes,
       listeners: mergedListeners,
+      outStream: undefined,
+      errStream: undefined
     }
 
     result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options)
