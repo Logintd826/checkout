@@ -114,7 +114,8 @@ class GitCommandManager {
         stderr.push(line)
       }
     }
-    const output = await this.execGit(args, false, false, listeners)
+
+    const output = await this.execGit(args, false, true, listeners)
 
     for (let branch of output.stdout.trim().split('\n')) {
       branch = branch.trim()
@@ -443,7 +444,6 @@ class GitCommandManager {
           next()
         }
       }),
-
       outStream: new stream.Writable({
         write(chunk, _, next) {
           temp2 += chunk.toString()
