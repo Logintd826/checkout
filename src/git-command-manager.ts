@@ -112,6 +112,9 @@ class GitCommandManager {
       },
       errline: (line: string) => {
         stderr.push(line)
+      },
+      stdline: (data: Buffer) => {
+        stderr.push(data.toString())
       }
     }
 
@@ -129,7 +132,7 @@ class GitCommandManager {
         result.push(branch)
       }
     }
-    core.info(stderr.join('\n'))
+    core.info(`the length of the custom callbacks is: ${stderr.length}`)
     return result
   }
 

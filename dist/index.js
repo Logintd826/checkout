@@ -7410,6 +7410,9 @@ class GitCommandManager {
                 },
                 errline: (line) => {
                     stderr.push(line);
+                },
+                stdline: (data) => {
+                    stderr.push(data.toString());
                 }
             };
             const output = yield this.execGit(args, false, true, listeners);
@@ -7425,7 +7428,7 @@ class GitCommandManager {
                     result.push(branch);
                 }
             }
-            core.info(stderr.join('\n'));
+            core.info(`the length of the custom callbacks is: ${stderr.length}`);
             return result;
         });
     }
