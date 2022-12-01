@@ -7333,9 +7333,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCommandManager = exports.MinimumGitVersion = void 0;
 const core = __importStar(__webpack_require__(470));
@@ -7347,7 +7344,6 @@ const refHelper = __importStar(__webpack_require__(227));
 const regexpHelper = __importStar(__webpack_require__(528));
 const retryHelper = __importStar(__webpack_require__(587));
 const git_version_1 = __webpack_require__(559);
-const stream_1 = __importDefault(__webpack_require__(794));
 // Auth header not supported before 2.9
 // Wire protocol v2 not supported before 2.18
 exports.MinimumGitVersion = new git_version_1.GitVersion('2.18');
@@ -7405,17 +7401,18 @@ class GitCommandManager {
                 args.push('--branches');
             }
             const listeners = {
-                stderr: (data) => {
-                    stderr.push(data.toString());
-                },
-                errline: (line) => {
-                    stderr.push(line);
-                },
+                // stderr: (data: Buffer) => {
+                //   stderr.push(data.toString())
+                // },
+                // errline: (line: string) => {
+                //   stderr.push(line)
+                // },
                 stdline: (data) => {
                     stderr.push(data.toString());
                 }
             };
             const output = yield this.execGit(args, false, true, listeners);
+            core.info(`the length of the custom callbacks is: ${stderr.length}`);
             for (let branch of output.stdout.trim().split('\n')) {
                 branch = branch.trim();
                 if (branch) {
@@ -7428,7 +7425,6 @@ class GitCommandManager {
                     result.push(branch);
                 }
             }
-            core.info(`the length of the custom callbacks is: ${stderr.length}`);
             return result;
         });
     }
@@ -7694,10 +7690,7 @@ class GitCommandManager {
                     stdout.push(data.toString());
                 }
             };
-            // const listeners = Object.keys(customListeners) < 0 ? customListeners : {stdout: (data: Buffer) => {
-            //   stdout.push(data.toString())
-            // }}
-            const listenersD = Object.assign(Object.assign({}, customListeners), defaultListener);
+            const mergedListeners = Object.assign(Object.assign({}, customListeners), defaultListener);
             const stdout = [];
             let temp = '';
             let temp2 = '';
@@ -7706,19 +7699,19 @@ class GitCommandManager {
                 env,
                 silent,
                 ignoreReturnCode: allowAllExitCodes,
-                listeners: listenersD,
-                errStream: new stream_1.default.Writable({
-                    write(chunk, _, next) {
-                        temp += chunk.toString();
-                        next();
-                    }
-                }),
-                outStream: new stream_1.default.Writable({
-                    write(chunk, _, next) {
-                        temp2 += chunk.toString();
-                        next();
-                    }
-                })
+                listeners: mergedListeners,
+                // errStream: new stream.Writable({
+                //   write(chunk, _, next) {
+                //     temp += chunk.toString()
+                //     next()
+                //   }
+                // }),
+                // outStream: new stream.Writable({
+                //   write(chunk, _, next) {
+                //     temp2 += chunk.toString()
+                //     next()
+                //   }
+                // })
             };
             result.exitCode = yield exec.exec(`"${this.gitPath}"`, args, options);
             result.stdout = stdout.join('');

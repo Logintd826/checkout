@@ -107,18 +107,20 @@ class GitCommandManager {
     }
 
     const listeners = {
-      stderr: (data: Buffer) => {
-        stderr.push(data.toString())
-      },
-      errline: (line: string) => {
-        stderr.push(line)
-      },
+      // stderr: (data: Buffer) => {
+      //   stderr.push(data.toString())
+      // },
+      // errline: (line: string) => {
+      //   stderr.push(line)
+      // },
       stdline: (data: Buffer) => {
         stderr.push(data.toString())
       }
     }
 
     const output = await this.execGit(args, false, true, listeners)
+
+    core.info(`the length of the custom callbacks is: ${stderr.length}`)
 
     for (let branch of output.stdout.trim().split('\n')) {
       branch = branch.trim()
@@ -132,7 +134,7 @@ class GitCommandManager {
         result.push(branch)
       }
     }
-    core.info(`the length of the custom callbacks is: ${stderr.length}`)
+    
     return result
   }
 
@@ -423,15 +425,15 @@ class GitCommandManager {
     for (const key of Object.keys(this.gitEnv)) {
       env[key] = this.gitEnv[key]
     }
+
     const defaultListener = {
       stdout: (data: Buffer) => {
         stdout.push(data.toString())
       }
     }
-    // const listeners = Object.keys(customListeners) < 0 ? customListeners : {stdout: (data: Buffer) => {
-    //   stdout.push(data.toString())
-    // }}
-    const listenersD = {...customListeners, ...defaultListener}
+
+    const mergedListeners = {...customListeners, ...defaultListener}
+
     const stdout: string[] = []
     let temp = ''
     let temp2 = ''
@@ -440,19 +442,19 @@ class GitCommandManager {
       env,
       silent,
       ignoreReturnCode: allowAllExitCodes,
-      listeners: listenersD,
-      errStream: new stream.Writable({
-        write(chunk, _, next) {
-          temp += chunk.toString()
-          next()
-        }
-      }),
-      outStream: new stream.Writable({
-        write(chunk, _, next) {
-          temp2 += chunk.toString()
-          next()
-        }
-      })
+      listeners: mergedListeners,
+      // errStream: new stream.Writable({
+      //   write(chunk, _, next) {
+      //     temp += chunk.toString()
+      //     next()
+      //   }
+      // }),
+      // outStream: new stream.Writable({
+      //   write(chunk, _, next) {
+      //     temp2 += chunk.toString()
+      //     next()
+      //   }
+      // })
     }
 
     result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options)
