@@ -92,8 +92,6 @@ class GitCommandManager {
 
   async branchList(remote: boolean): Promise<string[]> {
     const result: string[] = []
-    const stderr: string[] = []
-    const santizedOutput: string[] = []
 
     // Note, this implementation uses "rev-parse --symbolic-full-name" because the output from
     // "branch --list" is more difficult when in a detached HEAD state.
@@ -107,23 +105,32 @@ class GitCommandManager {
       args.push('--branches')
     }
 
+    const stderr: string[] = []
+    const errline: string[] = []
+    const stdout: string[] = []
+    const stdline: string[] = []
+
     const listeners = {
-      // stderr: (data: Buffer) => {
-      //   stderr.push(data.toString())
-      // },
-      // errline: (line: string) => {
-      //   stderr.push(line)
-      // },
+      stderr: (data: Buffer) => {
+        stderr.push(data.toString())
+      },
+      errline: (data: Buffer) => {
+        errline.push(data.toString())
+      },
+      stdout: (data: Buffer) => {
+        stdout.push(data.toString())
+      },
       stdline: (data: Buffer) => {
-        if (data.toString().trimRight().endsWith('is ambiguous')) {
-          stderr.push(data.toString())
-        }
+        stdline.push(data.toString())
       }
     }
 
-    const output = await this.execGit(args, false, false, listeners)
+    const output = await this.execGit(args, false, true, listeners)
 
     core.info(`the length of the custom callbacks is: ${stderr.length}`)
+    core.info(`the length of the custom callbacks is: ${errline.length}`)
+    core.info(`the length of the custom callbacks is: ${stdout.length}`)
+    core.info(`the length of the custom callbacks is: ${stdline.length}`)
 
     for (let branch of output.stdout.trim().split('\n')) {
       branch = branch.trim()

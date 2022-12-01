@@ -7388,8 +7388,6 @@ class GitCommandManager {
     branchList(remote) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = [];
-            const stderr = [];
-            const santizedOutput = [];
             // Note, this implementation uses "rev-parse --symbolic-full-name" because the output from
             // "branch --list" is more difficult when in a detached HEAD state.
             // Note, this implementation uses "rev-parse --symbolic-full-name" because there is a bug
@@ -7401,21 +7399,29 @@ class GitCommandManager {
             else {
                 args.push('--branches');
             }
+            const stderr = [];
+            const errline = [];
+            const stdout = [];
+            const stdline = [];
             const listeners = {
-                // stderr: (data: Buffer) => {
-                //   stderr.push(data.toString())
-                // },
-                // errline: (line: string) => {
-                //   stderr.push(line)
-                // },
+                stderr: (data) => {
+                    stderr.push(data.toString());
+                },
+                errline: (data) => {
+                    errline.push(data.toString());
+                },
+                stdout: (data) => {
+                    stdout.push(data.toString());
+                },
                 stdline: (data) => {
-                    if (data.toString().trimRight().endsWith('is ambiguous')) {
-                        stderr.push(data.toString());
-                    }
+                    stdline.push(data.toString());
                 }
             };
-            const output = yield this.execGit(args, false, false, listeners);
+            const output = yield this.execGit(args, false, true, listeners);
             core.info(`the length of the custom callbacks is: ${stderr.length}`);
+            core.info(`the length of the custom callbacks is: ${errline.length}`);
+            core.info(`the length of the custom callbacks is: ${stdout.length}`);
+            core.info(`the length of the custom callbacks is: ${stdline.length}`);
             for (let branch of output.stdout.trim().split('\n')) {
                 branch = branch.trim();
                 if (branch) {
