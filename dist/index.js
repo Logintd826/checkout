@@ -7417,7 +7417,7 @@ class GitCommandManager {
                     stdline.push(data.toString());
                 }
             };
-            core.info(`Running git ${args.join(' ')}`);
+            core.info(`${this.gitPath} ${args.join(' ')}`);
             yield this.execGit(args, false, true, listeners);
             core.debug(`stderr callback is: ${stderr}`);
             core.debug(`errline callback is: ${errline}`);
@@ -7701,16 +7701,14 @@ class GitCommandManager {
                     stdout.push(data.toString());
                 }
             };
-            const mergedListeners = Object.assign(Object.assign({}, customListeners), defaultListener);
+            const mergedListeners = Object.assign(Object.assign({}, defaultListener), customListeners);
             const stdout = [];
             const options = {
                 cwd: this.workingDirectory,
                 env,
                 silent,
                 ignoreReturnCode: allowAllExitCodes,
-                listeners: mergedListeners,
-                outStream: undefined,
-                errStream: undefined
+                listeners: mergedListeners
             };
             result.exitCode = yield exec.exec(`"${this.gitPath}"`, args, options);
             result.stdout = stdout.join('');

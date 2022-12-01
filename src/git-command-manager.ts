@@ -125,7 +125,7 @@ class GitCommandManager {
       }
     }
 
-    core.info(`Running git ${args.join(' ')}`)
+    core.info(`${this.gitPath} ${args.join(' ')}`)
 
     await this.execGit(args, false, true, listeners)
 
@@ -446,7 +446,7 @@ class GitCommandManager {
       }
     }
 
-    const mergedListeners = {...customListeners, ...defaultListener}
+    const mergedListeners = {...defaultListener, ...customListeners}
 
     const stdout: string[] = []
     const options = {
@@ -454,9 +454,7 @@ class GitCommandManager {
       env,
       silent,
       ignoreReturnCode: allowAllExitCodes,
-      listeners: mergedListeners,
-      outStream: undefined,
-      errStream: undefined
+      listeners: mergedListeners
     }
 
     result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options)
