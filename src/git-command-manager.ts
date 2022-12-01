@@ -127,10 +127,10 @@ class GitCommandManager {
 
     const output = await this.execGit(args, false, true, listeners)
 
-    core.info(`the length of the custom callbacks is: ${stderr.length}`)
-    core.info(`the length of the custom callbacks is: ${errline.length}`)
-    core.info(`the length of the custom callbacks is: ${stdout.length}`)
-    core.info(`the length of the custom callbacks is: ${stdline.length}`)
+    core.info(`the length of the stderr callback is: ${stderr.length}`)
+    core.info(`the length of the errline callback is: ${errline.length}`)
+    core.info(`the length of the stdout callback is: ${stdout.length}`)
+    core.info(`the length of the stdline callback is: ${stdline.length}`)
 
     for (let branch of output.stdout.trim().split('\n')) {
       branch = branch.trim()
