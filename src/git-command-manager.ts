@@ -93,6 +93,7 @@ class GitCommandManager {
   async branchList(remote: boolean): Promise<string[]> {
     const result: string[] = []
     const stderr: string[] = []
+    const santizedOutput: string[] = []
 
     // Note, this implementation uses "rev-parse --symbolic-full-name" because the output from
     // "branch --list" is more difficult when in a detached HEAD state.
@@ -114,11 +115,17 @@ class GitCommandManager {
       //   stderr.push(line)
       // },
       stdline: (data: Buffer) => {
-        stderr.push(data.toString())
+        if (data.toString().trimRight().endsWith('is ambiguous')) {
+          stderr.push(data.toString())
+        } else {
+          santizedOutput.push(data.toString())
+        }
       }
     }
 
     const output = await this.execGit(args, false, true, listeners)
+
+    output.stdout.concat(santizedOutput.join('\n'))
 
     core.info(`the length of the custom callbacks is: ${stderr.length}`)
 
@@ -435,32 +442,16 @@ class GitCommandManager {
     const mergedListeners = {...customListeners, ...defaultListener}
 
     const stdout: string[] = []
-    let temp = ''
-    let temp2 = ''
     const options = {
       cwd: this.workingDirectory,
       env,
       silent,
       ignoreReturnCode: allowAllExitCodes,
       listeners: mergedListeners,
-      // errStream: new stream.Writable({
-      //   write(chunk, _, next) {
-      //     temp += chunk.toString()
-      //     next()
-      //   }
-      // }),
-      // outStream: new stream.Writable({
-      //   write(chunk, _, next) {
-      //     temp2 += chunk.toString()
-      //     next()
-      //   }
-      // })
     }
 
     result.exitCode = await exec.exec(`"${this.gitPath}"`, args, options)
     result.stdout = stdout.join('')
-    core.info(temp.length.toString())
-    core.info(temp2.length.toString())
     return result
   }
 

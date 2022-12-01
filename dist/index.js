@@ -7389,6 +7389,7 @@ class GitCommandManager {
         return __awaiter(this, void 0, void 0, function* () {
             const result = [];
             const stderr = [];
+            const santizedOutput = [];
             // Note, this implementation uses "rev-parse --symbolic-full-name" because the output from
             // "branch --list" is more difficult when in a detached HEAD state.
             // Note, this implementation uses "rev-parse --symbolic-full-name" because there is a bug
@@ -7408,10 +7409,16 @@ class GitCommandManager {
                 //   stderr.push(line)
                 // },
                 stdline: (data) => {
-                    stderr.push(data.toString());
+                    if (data.toString().trimRight().endsWith('is ambiguous')) {
+                        stderr.push(data.toString());
+                    }
+                    else {
+                        santizedOutput.push(data.toString());
+                    }
                 }
             };
             const output = yield this.execGit(args, false, true, listeners);
+            output.stdout.concat(santizedOutput.join('\n'));
             core.info(`the length of the custom callbacks is: ${stderr.length}`);
             for (let branch of output.stdout.trim().split('\n')) {
                 branch = branch.trim();
@@ -7692,31 +7699,15 @@ class GitCommandManager {
             };
             const mergedListeners = Object.assign(Object.assign({}, customListeners), defaultListener);
             const stdout = [];
-            let temp = '';
-            let temp2 = '';
             const options = {
                 cwd: this.workingDirectory,
                 env,
                 silent,
                 ignoreReturnCode: allowAllExitCodes,
                 listeners: mergedListeners,
-                // errStream: new stream.Writable({
-                //   write(chunk, _, next) {
-                //     temp += chunk.toString()
-                //     next()
-                //   }
-                // }),
-                // outStream: new stream.Writable({
-                //   write(chunk, _, next) {
-                //     temp2 += chunk.toString()
-                //     next()
-                //   }
-                // })
             };
             result.exitCode = yield exec.exec(`"${this.gitPath}"`, args, options);
             result.stdout = stdout.join('');
-            core.info(temp.length.toString());
-            core.info(temp2.length.toString());
             return result;
         });
     }
