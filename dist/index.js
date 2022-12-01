@@ -7418,10 +7418,10 @@ class GitCommandManager {
                 }
             };
             const output = yield this.execGit(args, false, true, listeners);
-            core.info(`the length of the stderr callback is: ${stderr.length}`);
-            core.info(`the length of the errline callback is: ${errline.length}`);
-            core.info(`the length of the stdout callback is: ${stdout.length}`);
-            core.info(`the length of the stdline callback is: ${stdline.length}`);
+            core.info(`stderr callback is: ${stderr}`);
+            core.info(`errline callback is: ${errline}`);
+            core.info(`stdout callback is: ${stdout}`);
+            core.info(`stdline callback is: ${stdline}`);
             for (let branch of output.stdout.trim().split('\n')) {
                 branch = branch.trim();
                 if (branch) {
