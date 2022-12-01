@@ -125,14 +125,14 @@ class GitCommandManager {
       }
     }
 
-    const output = await this.execGit(args, false, true, listeners)
+    await this.execGit(args, false, true, listeners)
 
     core.info(`stderr callback is: ${stderr}`)
     core.info(`errline callback is: ${errline}`)
     core.info(`stdout callback is: ${stdout}`)
     core.info(`stdline callback is: ${stdline}`)
 
-    for (let branch of output.stdout.trim().split('\n')) {
+    for (let branch of stdline) {
       branch = branch.trim()
       if (branch) {
         if (branch.startsWith('refs/heads/')) {
