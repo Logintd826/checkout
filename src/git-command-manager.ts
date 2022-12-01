@@ -148,7 +148,7 @@ class GitCommandManager {
     }
 
     core.info(result.join('\n'))
-    
+
     return result
   }
 
