@@ -123,10 +123,11 @@ class GitCommandManager {
       }
     }
 
-    const output = await this.execGit(args, false, true, listeners)
+    const output = await this.execGit(args, false, false, listeners)
 
     output.stdout.concat(santizedOutput.join('\n'))
 
+    core.info(santizedOutput.join('\n'))
     core.info(`the length of the custom callbacks is: ${stderr.length}`)
 
     for (let branch of output.stdout.trim().split('\n')) {
