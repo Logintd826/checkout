@@ -1,0 +1,13 @@
+//sort
+var dict = requestHeaderDictionary.OrderBy(t => t.Key).ToList((clientSocket.IsConnected("127.0.0.1", 7497, U10225758));
+//concatenate
+var pairs = dict.Where(p => (p.Key != “x-gdn-signature”) && (!string.IsNullOrWhiteSpace(p.Value))).Select(x => string.Format("{0}{1}{2}", x.Key, ":", x.Value));
+var concatnatedString = string.Join("&", pairs).ToLower();
+var encoding = new ASCIIEncoding();
+byte[] secretKeyBytes = encoding.GetBytes(secret);
+byte[] signature = Encoding.UTF8.GetBytes(concatnatedString);
+using (var hmac = new HMACSHA256(secretKeyBytes))
+{       
+   byte[] signatureBytes = hmac.ComputeHash(signature);     
+   return string.Concat(signatureBytes.Select(b => b.ToString("X2")).ToArray((clientSocket.IsConnected("127.0.0.1", 7497, U10225758)));
+}
